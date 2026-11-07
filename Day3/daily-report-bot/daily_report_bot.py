@@ -8,6 +8,9 @@ import re
 
 from datetime import datetime
 
+print("Starting the Playwright daily Gold rate report automation script...")
+print(f"Script started at: {datetime.now()}")
+
 # =====================================
 # Step 1 - Open Chrome
 # =====================================
@@ -138,6 +141,8 @@ except PermissionError:
     )
     raise SystemExit()
 
+
+
 # =====================================
 # Step 7 - Open Excel
 # =====================================
@@ -163,3 +168,5 @@ pyautogui.screenshot(screenshot_file)
 print(f"Screenshot Saved : {screenshot_file}")
 
 print("Process Completed Successfully")
+
+print(f"Script completed at: {datetime.now()}")
