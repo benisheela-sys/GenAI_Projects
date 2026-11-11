@@ -1,89 +1,128 @@
-Assumptions
-Weight-loss target is approximately 0.4 kg per week, which is safe and sustainable.
-Diabetes is being managed with regular medical care and medication as prescribed.
-No food allergies or dietary restrictions other than vegetarian preferences.
-Portion sizes are designed for a moderately calorie-controlled diet suitable for a 42-year-old lightly active female.
-General Guidelines
-Daily water intake: 2.5-3 liters (8-12 glasses)
-Start the day with 1 glass of warm water.
-Eat meals at consistent times to support blood sugar control.
-Prefer steaming, boiling, sautéing, or grilling over frying.
-Limit white sugar, sweets, fruit juices, bakery products, and sugary beverages.
-Aim for 20-30 minutes of walking after meals whenever possible.
-Use 2-3 teaspoons of oil per day, preferably groundnut, sesame, or rice bran oil.
-7-Day Meal Plan
-Day	Breakfast (with portion size)	Lunch (with portion size)	Evening Snack (with portion size)	Dinner (with portion size)
-Day 1	2 medium Ragi dosa + ½ cup sambar + mint chutney	1 cup red rice + 1 cup mixed vegetable sambar + ½ cup sundal + cucumber salad	1 small guava + green tea	2 medium Chapati + 1 cup vegetable kurma + ½ cup curd
-Day 2	2 Vegetable oats idli + 1 cup sambar	1 cup millet lemon rice + 1 cup vegetable poriyal + ½ cup curd	25 g roasted chana	1 bowl Vegetable soup + 2 moong dal chilla
-Day 3	1 cup Vegetable upma + ½ cup sprouts salad	1 cup brown rice + rasam + 1 cup keerai kootu + cabbage poriyal	1 apple (small) + 5 almonds	2 medium Adai + avial (¾ cup)
-Day 4	2 medium Pesarattu + tomato chutney	1 cup red rice + 1 cup mixed vegetable kulambu + ½ cup cowpea sundal	1 cup buttermilk + cucumber slices	2 medium chapati + 1 cup chana masala
-Day 5	2 Idli + 1 cup sambar + chutney	1 cup vegetable millet khichdi + carrot-cucumber salad + curd	1 small pear + 10 peanuts	1 bowl vegetable stew + 2 appam (small)
-Day 6	2 medium Vegetable uthappam + sambar	1 cup brown rice + 1 cup mor kuzhambu + beans poriyal + ½ cup sprouts	1 cup sundal (black chana)	2 ragi rotis + 1 cup mixed vegetable curry
-Day 7	1 cup Ven pongal (made with millet) + 1 cup sambar	1 cup red rice + vegetable kootu + beetroot poriyal + salad	1 orange + herbal tea	2 medium adai + ½ cup curd + sautéed vegetables
-Weekly Shopping Highlights
+# Reusable Prompt: 7-Day South Indian Vegetarian Weight-Loss Meal Plan
 
-Vegetables
+## Editable User Profile (Change Only This Section)
 
-Drumstick
-Brinjal
-Tomato
-Onion
-Beans
-Carrot
-Beetroot
-Cabbage
-Cucumber
-Pumpkin
-Bottle gourd
-Greens (keerai varieties)
+**Activity Level:** Very Active  
+**Age:** 45  
+**Gender:** Male  
+**Height:** 162 cm  
+**Weight:** 105 kg  
+**Weight-Loss Goal:** Lose 10 kg over 3 months  
+**Food Allergies:** None  
+**Foods Disliked or Avoided:** None  
+**Medical Conditions:** None  
+**Location:** Chennai, Tamil Nadu, India  
+**Budget Preference:** Low
 
-Fruits
+---
 
-Guava
-Apple
-Pear
-Orange
-Papaya
+## Assumptions
 
-Protein Sources
+- The individual follows a lacto-vegetarian South Indian diet.
+- Meals are prepared at home using minimal oil (2-3 teaspoons per day).
+- Weight loss target is supported through moderate calorie deficit and regular physical activity.
+- Portion sizes are designed for gradual and sustainable fat loss without excessive hunger.
+- Tea/coffee may be consumed without sugar or with minimal sugar.
 
-Toor dal
-Moong dal
-Chana
-Black chana
-Cowpea
-Green gram sprouts
-Roasted gram
+---
 
-Grains and Staples
+## General Guidelines
 
-Ragi flour
-Millets (foxtail, little millet, kodo millet)
-Brown rice
-Red rice
-Whole wheat flour
-Oats
+- **Daily water intake:** 3-4 litres per day.
+- Start the day with 1 glass of warm water.
+- Eat meals at regular times and avoid skipping meals.
+- Prefer steaming, boiling, sautéing, and pressure cooking over deep frying.
+- Limit sweets, bakery items, sugary beverages, chips, and fast food.
+- Aim for 7-8 hours of sleep daily.
+- Include at least 30-45 minutes of physical activity on most days.
 
-Dairy Items
+---
 
-Low-fat curd
-Buttermilk
-Milk (optional)
+## 7-Day Meal Plan
 
-Spices and Pantry Essentials
+| Day | Breakfast (with portion size) | Lunch (with portion size) | Evening Snack (with portion size) | Dinner (with portion size) |
+|------|------|------|------|------|
+| Day 1 | 3 Idlis + 1 cup Sambar + 2 tbsp Coconut Chutney | 1 cup Brown Rice + 1 cup Sambar + 1 cup Beans Poriyal + Cucumber Salad | 1 Apple + 10 Peanuts | 2 Chapatis + 1 cup Mixed Vegetable Kurma + Salad |
+| Day 2 | 2 Vegetable Dosas + 1 cup Sambar | 1.5 cups Vegetable Millet Pongal + 1 cup Cabbage Poriyal + Buttermilk (200 ml) | 1 Guava + Green Tea | 2 Ragi Rotis + 1 cup Channa Masala |
+| Day 3 | 1.5 cups Vegetable Upma + 1 bowl Sprouts Salad | 1 cup Red Rice + 1 cup Keerai Kootu + 1 cup Vegetable Poriyal | Roasted Sundal (1 cup) | 2 Adai Dosas + Tomato Chutney + Vegetable Soup (1 bowl) |
+| Day 4 | 2 Ragi Dosas + 1 cup Sambar | 1 cup Lemon Rice (less oil) + 1 cup Rajma Curry + Salad | 1 Orange + 5 Almonds | 2 Chapatis + 1 cup Lauki Kootu + Stir-Fried Vegetables |
+| Day 5 | 2 Vegetable Uttapams + Sambar | 1 cup Brown Rice + 1 cup Kara Kuzhambu + 1 cup Chow Chow Kootu + Salad | Buttermilk (250 ml) + Roasted Chana (30 g) | 2 Moong Dal Chillas + Mint Chutney |
+| Day 6 | 1.5 cups Ven Pongal (made with less ghee) + Sambar | 1 cup Millet Rice + 1 cup Sambar + 1 cup Beetroot Poriyal + Salad | 1 Pear + Green Tea | 2 Wheat Dosas + 1 cup Mixed Vegetable Kurma |
+| Day 7 | 2 Adai + Avial (1 cup) | 1 cup Vegetable Biryani (homemade) + 1 cup Curd + Cucumber Raita | Sprouted Green Gram Salad (1 cup) | 2 Chapatis + 1 cup Dal Tadka + Vegetable Stir Fry |
 
-Mustard seeds
-Cumin seeds
-Turmeric
-Curry leaves
-Coriander powder
-Sambar powder
-Rasam powder
-Sesame seeds
-Groundnuts
-Nutrition Notes
-The plan emphasizes high-fiber foods such as millets, vegetables, legumes, and fruits to improve satiety and support blood sugar control.
-Each day includes protein sources (dal, chana, sprouts, sundal, curd) to help preserve muscle mass during weight loss.
-Traditional South Indian staples are included in controlled portions to create a calorie deficit without feeling deprived.
-Low-glycemic foods such as ragi, millets, brown rice, red rice, legumes, and vegetables help manage diabetes while promoting steady energy levels.
-The combination of fiber, protein, and moderate healthy fats helps reduce hunger and supports sustainable weight loss toward the goal of losing 5 kg over 3 months.
+---
+
+## Weekly Shopping Highlights
+
+### Vegetables
+- Drumstick
+- Carrot
+- Beans
+- Beetroot
+- Cabbage
+- Chow Chow
+- Bottle Gourd (Lauki)
+- Tomato
+- Onion
+- Cucumber
+- Spinach (Keerai)
+- Mixed seasonal vegetables
+
+### Fruits
+- Apple
+- Guava
+- Orange
+- Pear
+- Banana (occasionally)
+- Seasonal local fruits
+
+### Protein Sources
+- Toor Dal
+- Moong Dal
+- Channa
+- Rajma
+- Green Gram
+- Sprouts
+- Roasted Chana
+- Milk
+- Curd
+- Buttermilk
+
+### Grains and Staples
+- Brown Rice
+- Red Rice
+- Millets (Foxtail, Little Millet, Kodo Millet)
+- Ragi Flour
+- Whole Wheat Flour
+- Idli Rice
+- Dosa Batter Ingredients
+- Semolina (Rava)
+
+### Dairy Items
+- Low-fat Milk
+- Curd
+- Buttermilk
+
+### Spices and Pantry Essentials
+- Mustard Seeds
+- Curry Leaves
+- Turmeric
+- Cumin
+- Coriander Powder
+- Sambar Powder
+- Pepper
+- Tamarind
+- Groundnuts
+- Coconut (used moderately)
+- Gingelly Oil
+
+---
+
+## Nutrition Notes
+
+- The meal plan emphasizes **high-fiber foods** such as vegetables, fruits, millets, whole grains, and legumes, which help improve fullness and reduce overeating.
+- **Protein-rich foods** including dal, channa, rajma, sprouts, curd, and adai support muscle maintenance during weight loss.
+- Traditional South Indian staples are included in controlled portions to ensure sustainability and long-term adherence.
+- Healthy fats are provided in moderation through nuts, seeds, limited oil usage, and small amounts of coconut.
+- Balanced meals help maintain energy levels for an active lifestyle while creating a calorie deficit necessary for gradual weight loss.
+- Following this plan consistently, along with regular physical activity and adequate hydration, can support the goal of losing approximately 10 kg over 3 months in a healthy and sustainable manner.
