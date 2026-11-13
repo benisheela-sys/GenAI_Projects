@@ -24,5 +24,5 @@ prompts = [
 for i, prompt in enumerate(prompts, start=1):
     print(f"--- Prompt {i} ---")
     response = llm.invoke(prompt)
-    print(response.content)
+    print(response.content)   
     print("\n")
