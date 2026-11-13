@@ -1,42 +1,36 @@
-image:
 {
-  "SCALE": {
-    "Subject": "An authentic Kanchipuram silk saree, handwoven with pure mulberry silk and rich zari work, representing centuries of South Indian weaving heritage. The saree is portrayed as a masterpiece of craftsmanship rather than a generic garment.",
-    
-    "Composition": "Elegant close-up and full-length view highlighting the intricate temple borders, grand pallu, vibrant colors, detailed gold zari motifs, and luxurious silk texture. Balanced framing with emphasis on craftsmanship, richness, and cultural significance.",
-    
-    "Action": "A graceful woman drapes and showcases the Kanchipuram silk saree with pride, revealing the intricate weaving patterns, shimmering zari, and flowing silk fabric in natural movement.",
-    
-    "Location": "Traditional South Indian heritage setting in Kanchipuram, featuring ancient temple architecture, stone pillars, warm ambient lighting, and cultural elements that reinforce the saree's origin and legacy.",
-    
-    "Esthetic": "Luxurious, regal, timeless, culturally rich, photorealistic, premium fashion editorial quality, vibrant jewel tones, cinematic lighting, ultra-detailed textures, heritage storytelling, celebrating Indian craftsmanship and exclusivity."
+  "image": {
+    "SCALE": {
+      "Subject": "An authentic Kanchipuram silk saree, handwoven with pure mulberry silk and rich zari work, representing centuries of South Indian weaving heritage. The saree is portrayed as a masterpiece of craftsmanship rather than a generic garment.",
+      "Composition": "Elegant close-up and full-length view highlighting the intricate temple borders, grand pallu, vibrant colors, detailed gold zari motifs, and luxurious silk texture. Balanced framing with emphasis on craftsmanship, richness, and cultural significance.",
+      "Action": "A graceful woman drapes and showcases the Kanchipuram silk saree with pride, revealing the intricate weaving patterns, shimmering zari, and flowing silk fabric in natural movement.",
+      "Location": "Traditional South Indian heritage setting in Kanchipuram, featuring ancient temple architecture, stone pillars, warm ambient lighting, and cultural elements that reinforce the saree's origin and legacy.",
+      "Esthetic": "Luxurious, regal, timeless, culturally rich, photorealistic, premium fashion editorial quality, vibrant jewel tones, cinematic lighting, ultra-detailed textures, heritage storytelling, celebrating Indian craftsmanship and exclusivity."
+    }
+  },
+  "video": {
+    "S": {
+      "subject": "Authentic Kanchipuram silk saree with intricate temple borders, rich gold zari weaving, vibrant royal red and gold colors"
+    },
+    "C": {
+      "composition": "Close-up opening shot of shimmering silk fabric, smooth camera movement revealing detailed zari motifs, transitioning to a graceful full view of the saree draped elegantly"
+    },
+    "A": {
+      "action": "Silk fabric gently flowing in a soft breeze, golden zari threads sparkling as light moves across the weave, showcasing craftsmanship and luxury"
+    },
+    "L": {
+      "location": "Traditional South Indian heritage setting inspired by Kanchipuram, carved temple pillars, warm ambient lighting, cultural elegance"
+    },
+    "E": {
+      "esthetic": "Ultra-realistic, cinematic, premium luxury advertisement, golden hour lighting, shallow depth of field, high detail, rich textures, 4K quality, smooth motion, vibrant colors"
+    },
+    "video_settings": {
+      "duration": "5 seconds",
+      "aspect_ratio": "16:9",
+      "fps": 24,
+      "camera_movement": "slow dolly-in and cinematic pan",
+      "quality": "4K",
+      "style": "luxury fashion commercial"
+    }
   }
-}
-
-Video:{
-    {
-  "S": {
-    "subject": "Authentic Kanchipuram silk saree with intricate temple borders, rich gold zari weaving, vibrant royal red and gold colors"
-  },
-  "C": {
-    "composition": "Close-up opening shot of shimmering silk fabric, smooth camera movement revealing detailed zari motifs, transitioning to a graceful full view of the saree draped elegantly"
-  },
-  "A": {
-    "action": "Silk fabric gently flowing in a soft breeze, golden zari threads sparkling as light moves across the weave, showcasing craftsmanship and luxury"
-  },
-  "L": {
-    "location": "Traditional South Indian heritage setting inspired by Kanchipuram, carved temple pillars, warm ambient lighting, cultural elegance"
-  },
-  "E": {
-    "esthetic": "Ultra-realistic, cinematic, premium luxury advertisement, golden hour lighting, shallow depth of field, high detail, rich textures, 4K quality, smooth motion, vibrant colors"
-  },
-  "video_settings": {
-    "duration": "5 seconds",
-    "aspect_ratio": "16:9",
-    "fps": 24,
-    "camera_movement": "slow dolly-in and cinematic pan",
-    "quality": "4K",
-    "style": "luxury fashion commercial"
-  }
-}
 }
