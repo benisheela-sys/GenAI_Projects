@@ -1,0 +1,4 @@
+Week 3 :day 5
+write a Python script that uses Playwright,BeautifulSoup4 to load https://www.bbc.com/news and  extract the headline and print  top 5 headlines	
+
+Readme.md About the project , Explain the code and execution steps in README.md file
