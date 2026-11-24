@@ -23,3 +23,7 @@ tn.gov.in (Scheme Portal)
         │  Converts natural language → Cypher → grounded answer
         ▼
   app.py (Streamlit Chat UI)
+
+  RUN 
+  Backend: uvicorn backend:app --reload --port 8001
+  Fronend: streamlit run app.py
