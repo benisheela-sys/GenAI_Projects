@@ -1,0 +1,499 @@
+{
+  "name": "Week3-Day3-StudentETL",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "File upload",
+        "formDescription": "Upload a student file",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "File upload",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -1488,
+        -48
+      ],
+      "id": "8e53b27f-1618-46bb-b94f-cfe28c5c0398",
+      "name": "On form submission",
+      "webhookId": "e47efb1f-c6b8-4537-a86e-3440366b0538"
+    },
+    {
+      "parameters": {
+        "name": "=Student_Clean.csv",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1QYYix3zLaY8S_at0Byy1kHzd2RzA56AR",
+          "mode": "list",
+          "cachedResultName": "GENAPI",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1QYYix3zLaY8S_at0Byy1kHzd2RzA56AR"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -736,
+        176
+      ],
+      "id": "f0ef6903-e52f-4402-a382-68712b4ca65e",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SYQzSB4gdOghLdqZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "File_upload",
+        "options": {
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.2,
+      "position": [
+        -1280,
+        -48
+      ],
+      "id": "17b15f17-81a2-4aa1-b561-b9905d9766f4",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Row Data:{{ JSON.stringify($json) }}\n\nRules Clean the following student dataset:\n1. Trim leading and trailing spaces from all values.\n2. Remove empty rows and duplicate student records.\n3. Fix inconsistent capitalization (Title Case for names,Title case for city ,lowercase for emails).\n4. check phone number is 10 digits , if less then 10 digits set invalid\n5. Check email , if invalid email, set invalid email\n6. convert fee_paid , yes/Yes/Y/YES set true and No/no/N/NO=False\n7. course only machine learing or python or Data Science\n8. Enrolled Date set YYYY/MM/DD\n9. if city is null, set unknown\n10. Return ONLY a valid JSON output . Do not include explanations or markdown \n11.Delete duplicate rows\n\n",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -1136,
+        -288
+      ],
+      "id": "27a9692e-021b-4cfd-b23e-7ecf2ff68293",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1056,
+        272
+      ],
+      "id": "6500a132-ccc2-400b-9ab5-f9491fb918ad",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "XprFL3YZVh2VcPwE",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const seen = new Set();\nconst allStudents = [];\n\nfor (const item of $input.all()) {\n  // Handle both direct items and an aggregated array inside 1 item (e.g., item.json.data)\n  const nestedArray = Object.values(item.json).find(val => Array.isArray(val));\n  const entries = nestedArray || [item.json];\n\n  for (const entry of entries) {\n    const rawText = typeof entry === 'string' ? entry : entry?.text;\n    if (!rawText) continue;\n\n    // Remove any accidental markdown code blocks\n    const cleaned = rawText.replace(/```json|```/gi, '').trim();\n\n    try {\n      const parsed = JSON.parse(cleaned);\n      // Normalize both single objects ({...}) and arrays ([{...}]) into an array\n      const rows = Array.isArray(parsed) ? parsed : [parsed];\n\n      for (const row of rows) {\n        const id = String(row.Student_ID || JSON.stringify(row)).trim();\n        if (seen.has(id)) continue;\n        seen.add(id);\n\n        allStudents.push(row);\n      }\n    } catch (err) {\n      continue;\n    }\n  }\n}\n\n// Output clean, beautified JSON items (ready for n8n Table/JSON view or Convert to File)\nreturn allStudents.map(student => ({ json: student }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        -320
+      ],
+      "id": "2140b59a-e688-41b5-bc29-cc4587bc29cd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "name": "=Students_Enrolled.csv",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1QYYix3zLaY8S_at0Byy1kHzd2RzA56AR",
+          "mode": "list",
+          "cachedResultName": "GENAPI",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1QYYix3zLaY8S_at0Byy1kHzd2RzA56AR"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        592,
+        -128
+      ],
+      "id": "2c2f38f7-cd06-4947-88b3-2161034ed92d",
+      "name": "Upload file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SYQzSB4gdOghLdqZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -512,
+        160
+      ],
+      "id": "d7258061-b8c9-4a7d-98bb-e36311efbd74",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SYQzSB4gdOghLdqZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        -112
+      ],
+      "id": "656ef451-5808-44cf-ac87-8aec73640b3b",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "05314118-361f-4d86-951d-bc5a5ae9221a",
+              "leftValue": "={{ $json.Fee_Paid }}",
+              "rightValue": "TRUE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -96,
+        144
+      ],
+      "id": "847ec8a7-bbff-4ff1-b6f8-6101d2524880",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        480
+      ],
+      "id": "9c80ab5d-2fbd-480e-a14a-228513e59a0b",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "name": "Student_NotEnrolled.csv",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1QYYix3zLaY8S_at0Byy1kHzd2RzA56AR",
+          "mode": "list",
+          "cachedResultName": "GENAPI",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1QYYix3zLaY8S_at0Byy1kHzd2RzA56AR"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        368,
+        480
+      ],
+      "id": "5571a048-7fe6-4e05-8b5b-4a5b0d6711e0",
+      "name": "Upload file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SYQzSB4gdOghLdqZ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        -416,
+        -192
+      ],
+      "id": "876a9839-e87a-4797-8bee-fed37613c79c",
+      "name": "Convert to File2"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "=data",
+        "options": {
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        304
+      ],
+      "id": "164cbf62-d04d-4685-954a-f6212a5cd556",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -336
+      ],
+      "id": "93749fca-781e-408c-ac92-240336f5fb06",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert to File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Upload file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File2": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f98a4e27-582a-4290-8817-12f17ca2687b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1efecd3189b4decfdaf1ceee2c036d8adde2195642acaa3339cac521dc1801f6"
+  },
+  "nodeGroups": [],
+  "id": "NRvFYmaU0QGjMkuJ",
+  "tags": []
+}

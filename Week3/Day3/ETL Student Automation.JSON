@@ -1,0 +1,192 @@
+{
+  "name": "ETL Student Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "File Upload",
+        "formDescription": "Upload student file",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "File Upload",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "24c73687-f003-4853-8ad0-406003ea179e",
+      "name": "CSV upload",
+      "webhookId": "6174baa9-d4dc-46b7-a312-d0732521eb7e"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "File_Upload",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "c0035af8-1ed9-4a36-8bfd-1372c8bb24ac",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Clean this student enrolment row and return only a JSON object\n\nRow dta : {{ JSON.stringify( $json) }}\n\nRules \n-Name: Title Case (Manoj K)\n-Email: if invalid Email, set INVALID EMAIL\n-Phone: if less then 10 digits, set MISSING\n-Course: only Python or Machine Learning or Data Science\n-Fees_Paid: yes/YES= true, no/NO =false\n-City: Title Case, empty=UNKNOWN\n-Enrolled_Data: Convet to YYYY-MM-DD\n\nReturn only JSON, No Explanation , No Markdown",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "f8b3a53a-30d7-4109-9765-82c21af923f3",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        224
+      ],
+      "id": "494b1565-117a-43c2-a280-fbb90e68f4e6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "XprFL3YZVh2VcPwE",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n\nreturn $input.all().map(item => {\n  // 1. Find the raw string\n  let raw =\n    item.json.output ??\n    item.json.text ??\n    item.json.data ??\n    Object.values(item.json).find(val => typeof val === 'string');\n\n  // 2. Clean and parse the escaped JSON string\n  let parsed = item.json;\n  if (typeof raw === 'string') {\n    let cleaned = raw\n      .replace(/```json|```/g, '')\n      .replace(/\\\\\"/g, '\"')\n      .trim();\n\n    parsed = JSON.parse(cleaned);\n\n    if (typeof parsed === 'string') {\n      parsed = JSON.parse(parsed);\n    }\n  }\n\n  // 3. Validate email\n  const rawEmail = typeof parsed.Email === 'string' ? parsed.Email.trim() : '';\n  const validEmail = emailRegex.test(rawEmail) ? rawEmail : 'Invalid Email';\n\n  // 4. Clean field values\n  const cleanedData = {\n    Student_ID: parsed.Student_ID?.trim() || null,\n    Name: parsed.Name?.trim() || null,\n    Email: validEmail,\n    Phone: parsed.Phone?.toString().trim() || null,\n    Course: parsed.Course?.trim() || null,\n    Fee_Paid: Boolean(parsed.Fee_Paid),\n    City: parsed.City?.trim() || null,\n    Enrolled_Date: parsed.Enrolled_Date?.trim() || null,\n  };\n\n  return { json: cleanedData };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -16
+      ],
+      "id": "7e454dd4-6fc0-4cac-a58e-79b4a166e35a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "Clean Data",
+        "options": {
+          "fileName": "=Clean_Data.CSV"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        -16
+      ],
+      "id": "062d5e65-e6fc-49c8-a8d3-dce2431528c8",
+      "name": "Convert to File",
+      "alwaysOutputData": false,
+      "executeOnce": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "CSV upload": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "76266e21-12d7-4009-b10b-63c98cbddf63",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1efecd3189b4decfdaf1ceee2c036d8adde2195642acaa3339cac521dc1801f6"
+  },
+  "nodeGroups": [],
+  "id": "281e01EBOeYXpT7W",
+  "tags": []
+}
