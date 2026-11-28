@@ -1,0 +1,418 @@
+{
+  "name": "GoogleSheet_to_Gmail",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        -80
+      ],
+      "id": "d55ef67a-a8e6-4c23-99f2-c6cebbaf18c4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ",
+          "mode": "list",
+          "cachedResultName": "Student_information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Info",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -864,
+        -64
+      ],
+      "id": "2086b02b-5447-4f3f-a0db-fe4d3152b3d5",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "h0UzbIscIims9das",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nconst seenEmails = new Set();\nconst emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n\nfor (const item of $input.all()) {\n  const rowNumber = item.json.row_number;\n  const name = (item.json.Name || '').toString().trim();\n  const course = (item.json.Course || '').toString().trim();\n  const status = (item.json.Status || 'In Progress').toString().trim();\n  const recipientEmail = (item.json.Emailid || '').toString().trim();\n  const emailKey = recipientEmail.toLowerCase();\n  const emailSent = (item.json['Email Sent'] || '').toString().trim().toLowerCase();\n\n  // If already sent, remember the email (to catch later duplicates) and skip this row\n  if (emailSent === 'yes') {\n    if (emailKey) seenEmails.add(emailKey);\n    continue;\n  }\n\n  // Check validation & duplicate rules\n  let reason = '';\n  if (!recipientEmail || !emailRegex.test(recipientEmail)) {\n    reason = 'Invalid or missing email';\n  } else if (seenEmails.has(emailKey)) {\n    reason = 'Duplicate email';\n  } else if (!name || !course) {\n    reason = 'Missing Name or Course';\n  }\n\n  if (reason) {\n    results.push({\n      json: {\n        row_number: rowNumber,\n        to: recipientEmail,\n        isValid: false,\n        skipReason: reason,\n      },\n    });\n    continue;\n  }\n\n  // Mark this valid email as seen so any later row with the same email is flagged as a duplicate\n  seenEmails.add(emailKey);\n\n  const subject = `Welcome to Social Eagle : ${name}`;\n  const body = `\n  <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;\">\n    <div style=\"background-color: #1a73e8; color: #ffffff; padding: 20px; text-align: center;\">\n      <h2 style=\"margin: 0; font-size: 22px;\">Welcome to Social Eagle!</h2>\n    </div>\n    <div style=\"padding: 24px; color: #333333; line-height: 1.6; font-size: 15px;\">\n      <p style=\"margin-top: 0;\">Dear <strong>${name}</strong>,</p>\n      <p>We are thrilled to have you join our learning community! We are excited to guide you through this journey and help you gain hands-on experience and new skills.</p>\n      <div style=\"background-color: #f8f9fa; border-left: 4px solid #1a73e8; padding: 12px 16px; margin: 20px 0;\">\n        <p style=\"margin: 4px 0;\"><strong>Name:</strong> ${name}</p>\n        <p style=\"margin: 4px 0;\"><strong>Course:</strong> ${course}</p>\n        <p style=\"margin: 4px 0;\"><strong>Current Status:</strong> ${status}</p>\n      </div>\n      <p>If you have any questions or need any support getting started, please feel free to reach out to us anytime.</p>\n      <p style=\"margin-bottom: 0;\">Warm Regards,<br><strong>Admin - Social Eagle</strong></p>\n    </div>\n  </div>`;\n\n  results.push({\n    json: {\n      row_number: rowNumber,\n      to: recipientEmail,\n      subject: subject,\n      body: body,\n      isValid: true,\n    },\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        -64
+      ],
+      "id": "0e4c7b51-a9f0-46ff-a4f3-96adfa344b4c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        -176
+      ],
+      "id": "d095ac00-404f-4bf3-a48d-1e57730d3a72",
+      "name": "Send a message",
+      "webhookId": "3c40b9f2-3245-4954-98aa-37e8047c997b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ynMO53FEKcz2mTdC",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "039bc2e2-60de-4627-ac9b-fd3cd42ca6b9",
+              "leftValue": "={{ $json.isValid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -448,
+        -64
+      ],
+      "id": "c46cdb80-0dc0-4e9f-96bc-a715a897090e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ",
+          "mode": "list",
+          "cachedResultName": "Student_information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Info",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('If').item.json.row_number }}",
+            "Email Sent": "Yes"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Course",
+              "displayName": "Course",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Emailid",
+              "displayName": "Emailid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Sent",
+              "displayName": "Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        -176
+      ],
+      "id": "4a131cc8-060a-4d37-9f69-131d46f06e1c",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "h0UzbIscIims9das",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ",
+          "mode": "list",
+          "cachedResultName": "Student_information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Info",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GbrJupeCueV4cW6-LT5cICBbusK_emamCLSrBA3ShrQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('If').item.json.row_number }}",
+            "Email Sent": "No"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Course",
+              "displayName": "Course",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Emailid",
+              "displayName": "Emailid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Sent",
+              "displayName": "Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        64
+      ],
+      "id": "8a405d01-72b5-4cf8-982f-4ea953907afc",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "h0UzbIscIims9das",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "f798cc43-4cbc-4bc7-b33c-7b272211fc4b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1efecd3189b4decfdaf1ceee2c036d8adde2195642acaa3339cac521dc1801f6"
+  },
+  "nodeGroups": [],
+  "id": "HP8DTK6xOL1cae9X",
+  "tags": []
+}

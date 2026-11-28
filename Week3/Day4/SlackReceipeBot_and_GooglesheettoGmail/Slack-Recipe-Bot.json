@@ -1,0 +1,216 @@
+{
+  "name": "Slack-Recipe-Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-1",
+              "leftValue": "={{ $json.bot_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "cond-2",
+              "leftValue": "={{ $json.subtype }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "b6d21487-cde1-4da8-b0f0-209a897a9254",
+      "name": "Ignore Bot Messages",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        0,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Recipe requested: {{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=List all the products and ingredients needed to make {{ $json.text }}\nReturn a clear bulleted list with approximate quantities.\nExplain how to cook\nKeep it short and practical. If the recipe name is unclear,\nask the user to rephrase it. "
+            }
+          ]
+        }
+      },
+      "id": "f4290406-13ac-462d-aaa0-5f7dd66ac59b",
+      "name": "Generate Ingredient List",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        256,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "8c01c1d7-68e7-4efd-bed6-fb7d90d63d59",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        272,
+        256
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "XprFL3YZVh2VcPwE",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $('Slack-Trigger').item.json.channel }}",
+          "mode": "id"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "2131cda1-6b37-4a9b-8c67-ca2449de7a72",
+      "name": "Reply in Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        32
+      ],
+      "webhookId": "4eac22e3-e0fa-45ef-86d1-4d044b8ad809",
+      "credentials": {
+        "slackApi": {
+          "id": "xneGcH1OOzlAH3Aq",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "trigger": [
+          "message"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C0CNFJXPH5E",
+          "mode": "list",
+          "cachedResultName": "recipe-bot"
+        },
+        "options": {}
+      },
+      "id": "e3296fc7-a172-4f18-af56-757c7d2618c0",
+      "name": "Slack-Trigger",
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        16
+      ],
+      "webhookId": "slack-recipe-trigger",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "credentials": {
+        "slackApi": {
+          "id": "xneGcH1OOzlAH3Aq",
+          "name": "Slack account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ignore Bot Messages": {
+      "main": [
+        [
+          {
+            "node": "Generate Ingredient List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Ingredient List",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Ingredient List": {
+      "main": [
+        [
+          {
+            "node": "Reply in Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack-Trigger": {
+      "main": [
+        [
+          {
+            "node": "Ignore Bot Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "598b3e85-4361-4aed-bcce-ad4dac2008df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1efecd3189b4decfdaf1ceee2c036d8adde2195642acaa3339cac521dc1801f6"
+  },
+  "nodeGroups": [],
+  "id": "Y4OlHnilGmBlrUD0",
+  "tags": []
+}
