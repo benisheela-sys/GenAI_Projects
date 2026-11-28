@@ -1,0 +1,245 @@
+{
+  "name": "Unread Email Summariser",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -112
+      ],
+      "id": "f9262685-302f-43e5-b74a-f585313d7f24",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 5,
+        "filters": {
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        -112
+      ],
+      "id": "4ba4806c-fa74-443a-899a-3119042f7f3e",
+      "name": "Get many messages",
+      "webhookId": "c7ff0295-bde3-40c3-818b-e0d0f9e616c3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ynMO53FEKcz2mTdC",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write ONE line (20 words maximum) describing this email.\nNo greeting, no heading, no extra text.\n\n{{ $json.snippet }}",
+        "options": {
+          "systemMessage": "You are a concise email summariser. Return only one line of 20 words maximum per email. Never include greetings, headings, or extra text.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -176,
+        -96
+      ],
+      "id": "4aed3b22-8cf1-4ad2-beb1-48267a0bc29e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        128
+      ],
+      "id": "9321423b-a5b8-4b41-bfa1-3689a6739232",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "XprFL3YZVh2VcPwE",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "formatted_output",
+              "separateBy": "\n"
+            }
+          ]
+        },
+        "options": {
+          "outputFormat": "separateItems"
+        }
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -96
+      ],
+      "id": "5d996ce0-158b-42b8-ab02-b75b06b4b6b9",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "sendTo": "beni.sheela@gmail.com",
+        "subject": "Summary of Your Latest 5 Unread Emails",
+        "emailType": "text",
+        "message": "={{ $json.concatenated_formatted_output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -96
+      ],
+      "id": "948bbba9-0653-422d-a8ac-7ee1395aba3e",
+      "name": "Send a message",
+      "webhookId": "df281705-afde-4fe0-bf8a-68ea637f910d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ynMO53FEKcz2mTdC",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "776ed770-4367-4769-b3d7-6e4fea4f1d3f",
+              "name": "formatted_output",
+              "value": "=From: {{ $('Get many messages').item.json.From }} | Subject: {{ $('Get many messages').item.json.Subject }} | Summary: {{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "44d96e1e-49e4-428b-a7e0-b2d160ef0979",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        96,
+        -96
+      ],
+      "id": "21a3df00-b207-4625-886b-038450c35236",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "89acec7a-c346-4e22-903f-421e3ed23e0f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1efecd3189b4decfdaf1ceee2c036d8adde2195642acaa3339cac521dc1801f6"
+  },
+  "nodeGroups": [],
+  "id": "yuYHCNOvuZMEf2qW",
+  "tags": []
+}
